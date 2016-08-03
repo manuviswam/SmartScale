@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"log"
 	"os"
+	
 	h "github.com/manuviswam/SmartScale/handlers"
 
 	"github.com/gorilla/mux"
@@ -12,6 +13,6 @@ import (
 
 func main() {
 	r := mux.NewRouter()
-    r.HandleFunc("/", h.ServeIndexPage)
+    r.HandleFunc("/", h.ServeIndexPage())
     log.Fatal(http.ListenAndServe(":8080", gh.LoggingHandler(os.Stdout, r)))
 }
