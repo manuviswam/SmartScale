@@ -4,7 +4,7 @@
   "description": "Track your weight in a smart way",
   "main": "index.js",
   "scripts": {
-    "build": "node_modules/.bin/webpack -p && go build -o out/smartscale ./main/main.go",
+    "build": "make build",
     "devServer": "./node_modules/.bin/webpack-dev-server --inline --hot",
     "test": "jest --coverage"
   },
