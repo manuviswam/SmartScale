@@ -1,0 +1,7 @@
+{
+	"Port":8080,
+	"DBServer":"localhost",
+	"DBPort":5432,
+	"DBUsername": "smart_scale_user",
+	"DBPassword": "xxxxx"
+}
