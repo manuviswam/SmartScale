@@ -5,12 +5,14 @@ import (
 	"log"
 	"os"
 	"fmt"
+	"database/sql"
 	
 	h "github.com/manuviswam/SmartScale/handlers"
 	c "github.com/manuviswam/SmartScale/config"
 
 	"github.com/gorilla/mux"
 	gh "github.com/gorilla/handlers"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -26,7 +28,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	dbinfo := fmt.Sprintf("user=%s password=%s dbname=smart_scale sslmode=disable",
+        conf.DBUsername, conf.DBPassword)
+    db, err := sql.Open("postgres", dbinfo)
+    defer db.Close()
+    if err != nil {
+    	log.Fatal(err)
+    }
+
 	r := mux.NewRouter()
     r.HandleFunc("/", h.ServeIndexPage())
+    r.HandleFunc("/api/weight", h.SaveWeight(db))
     log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d",conf.Port), gh.LoggingHandler(f, r)))
 }
