@@ -9,6 +9,7 @@ import (
 	
 	h "github.com/manuviswam/SmartScale/handlers"
 	c "github.com/manuviswam/SmartScale/config"
+	"github.com/manuviswam/SmartScale/utils"
 
 	"github.com/gorilla/mux"
 	gh "github.com/gorilla/handlers"
@@ -37,8 +38,14 @@ func main() {
     	log.Fatal(err)
     }
 
+    employeeGetter := utils.EmployeeDetailFromServer{
+    	Server: conf.AdjuvantServer,
+    	API: conf.AdjuvantInternalNumberAPI,
+    	AuthKey: conf.AdjuvantAuthKey,
+    }
+
 	r := mux.NewRouter()
     r.HandleFunc("/", h.ServeIndexPage())
-    r.HandleFunc("/api/weight", h.SaveWeight(db))
+    r.HandleFunc("/api/weight", h.SaveWeight(db, &employeeGetter))
     log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d",conf.Port), gh.LoggingHandler(f, r)))
 }

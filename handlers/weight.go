@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"database/sql"
 	"time"
@@ -9,30 +8,45 @@ import (
 	"strconv"
 
 	m "github.com/manuviswam/SmartScale/models"
+	"github.com/manuviswam/SmartScale/utils"
 )
 
-func SaveWeight(db *sql.DB) func(http.ResponseWriter, *http.Request) { 
+func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *http.Request) { 
 	return func(w http.ResponseWriter, r *http.Request) {
 		wt, err := strconv.ParseFloat(r.FormValue("weight"), 64)
 		if err != nil {
-			log.Println(err)
+			log.Println("Invalid weight: ", err)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
+
+		in, err := strconv.ParseInt(r.FormValue("internalNumber"), 10, 64)
+		if err != nil {
+			log.Println("Invalid internal number: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		emp, err := eg.GetEmployeeFromInternalNumber(in)
+		if err != nil {
+			log.Println("Error decoding response: ", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
 		weightInfo := m.WeightInfo{
-			EmpId : 16134,
+			EmpId : emp.EmpId,
 			Weight : wt,
 			RecordedAt : time.Now(),
 		}
 
 		err = weightInfo.SaveToDB(db)
 		if err != nil {
-			log.Println(err)
+			log.Println("Error writing to DB: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 
 		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "Done")
 	}
 }

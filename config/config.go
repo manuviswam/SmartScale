@@ -11,6 +11,9 @@ type Configuration struct {
     DBPort int
     DBUsername string
     DBPassword string
+    AdjuvantServer string
+    AdjuvantInternalNumberAPI string
+    AdjuvantAuthKey string
 }
 
 func ReadFromFile(path string) (Configuration, error) {

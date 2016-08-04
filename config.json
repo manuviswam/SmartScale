@@ -3,5 +3,8 @@
 	"DBServer":"localhost",
 	"DBPort":5432,
 	"DBUsername": "smart_scale_user",
-	"DBPassword": "xxxxx"
+	"DBPassword": "xxxxx",
+	"AdjuvantServer": "http://10.132.127.212:8083",
+	"AdjuvantInternalNumberAPI": "api/users/internalNumber",
+	"AdjuvantAuthKey": "hJEjqgSY579RAAR4xDqWyg=="
 }

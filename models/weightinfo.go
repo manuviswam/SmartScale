@@ -11,7 +11,7 @@ const (
 
 type WeightInfo struct {
 	Id int64
-	EmpId int64
+	EmpId string
 	Weight float64
 	RecordedAt time.Time
 }
