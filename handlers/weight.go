@@ -6,6 +6,7 @@ import (
 	"time"
 	"log"
 	"strconv"
+	"encoding/json"
 
 	m "github.com/manuviswam/SmartScale/models"
 	"github.com/manuviswam/SmartScale/utils"
@@ -47,6 +48,9 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 			return
 		}
 
+		weightInfos, _ := m.GetWeightsByEmpId(db, emp.EmpId)
+
 		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(weightInfos) //Push this to the websocket channel
 	}
 }
