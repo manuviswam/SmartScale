@@ -6,6 +6,7 @@ module.exports = {
   entry: "./javascript/src/index.js",
   output: {
     path: "out/public/js",
+    publicPath: "/public/js/",
     filename: "app.js",
     hash: true
   },

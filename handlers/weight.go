@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"encoding/json"
 
+	"github.com/gorilla/websocket"
+
 	m "github.com/manuviswam/SmartScale/models"
 	"github.com/manuviswam/SmartScale/utils"
 )
@@ -65,7 +67,8 @@ func pushMessage(data m.WeightResponse) {
 		log.Println(err)
 		return
 	}
-	log.Println(string(pushMsg))//write this message to channel
+	weightChan := m.WeightChan()
+	weightChan <- pushMsg
 }
 
 func pushErrorMessage(msg string) {
@@ -77,7 +80,7 @@ func pushErrorMessage(msg string) {
 	pushMessage(wr)
 }
 
-func pushSuccessMessage(emp m.Employee, currentWeight float64, weights []m.Weight){
+func pushSuccessMessage(emp m.Employee, currentWeight float64, weights []m.Weight) {
 	wr := m.WeightResponse{
 		IsError: false,
 		EmpId: emp.EmpId,
@@ -87,4 +90,29 @@ func pushSuccessMessage(emp m.Employee, currentWeight float64, weights []m.Weigh
 	}
 
 	pushMessage(wr)
+}
+
+var upgrader = websocket.Upgrader{
+    ReadBufferSize:  1024,
+    WriteBufferSize: 1024,
+}
+
+func GetWeight() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+	    if err != nil {
+	        log.Println(err)
+	        return
+	    }
+	    defer conn.Close()
+	    weightChan := m.WeightChan()
+	    for {
+			msg := <-weightChan
+			err = conn.WriteMessage(websocket.TextMessage, msg)
+			if err != nil {
+				log.Println("write:", err)
+				break
+			}
+	    }
+	}
 }

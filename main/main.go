@@ -47,5 +47,7 @@ func main() {
 	r := mux.NewRouter()
     r.HandleFunc("/", h.ServeIndexPage())
     r.HandleFunc("/api/weight", h.SaveWeight(db, &employeeGetter))
+    r.HandleFunc("/api/getWeight", h.GetWeight())
+    r.PathPrefix("/public").Handler(http.StripPrefix("/public", http.FileServer(http.Dir("./public"))))
     log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d",conf.Port), gh.LoggingHandler(f, r)))
 }

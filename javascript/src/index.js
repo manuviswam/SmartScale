@@ -3,15 +3,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { LineChart, Line, CartesianGrid, YAxis, XAxis, Tooltip } from "recharts";
 
-const data = [
-	{date:"10-07-2016", weight:50 },
-	{date:"11-07-2016", weight:60 },
-	{date:"12-07-2016", weight:54 },
-	{date:"15-07-2016", weight:55 },
-	{date:"18-07-2016", weight:58 },
-	{date:"20-07-2016", weight:53 }
-]
-
 const CustomizedLabel = React.createClass({
   render () {
     const {x, y, stroke, payload} = this.props;
@@ -45,17 +36,49 @@ const CustomizedYAxisTick = React.createClass({
 });
 
 const SimpleLineChart = React.createClass({
-	render() {
-		return (
-			<LineChart width={600} height={300} data={data} margin={{ top: 20, right: 40, bottom: 5, left: 0 }} >
-			  <Line type="monotone" dataKey="weight" stroke="#8884d8" xAxisId="dateAxis" yAxisId="weightAxis" unit="Kg" label={<CustomizedLabel />}/>
-			  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-			  <XAxis dataKey="date" xAxisId="dateAxis" height={60} tick={<CustomizedXAxisTick/>} />
-			  <YAxis yAxisId="weightAxis" domain={['dataMin - 10', 'dataMax + 10']} tick={<CustomizedYAxisTick/>} />
-			  <Tooltip />
-			</LineChart>
-		);
+	getInitialState: function() {
+		return {
+			isVisible: false,
+			data: {}
+		};
+	},
+
+	componentWillMount: function() {
+		if(window["WebSocket"]) {
+	        let conn = new WebSocket("ws://localhost:8080/api/getWeight");
+	        conn.onmessage = function (evt) {
+	            this.setState({
+	            	isVisible: true,
+	            	data: JSON.parse(evt.data)
+	            });
+	            setTimeout(function(){
+	            	this.setState({
+	            		isVisible: false,
+	            		data: {}
+	            	});
+	            }.bind(this), 30*1000);
+	        }.bind(this);
+    	}
+	},
+
+	render: function() {
+		if(!this.state.isVisible){
+			return (
+				<text>Please step on the weighing machine</text>
+				)
+		}else {
+			return (
+				<LineChart width={600} height={300} data={this.state.data.Weights} margin={{ top: 20, right: 40, bottom: 5, left: 0 }} >
+				  <Line type="monotone" dataKey="Weight" stroke="#8884d8" xAxisId="dateAxis" yAxisId="weightAxis" unit="Kg" label={<CustomizedLabel />}/>
+				  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+				  <XAxis dataKey="RecordedAt" xAxisId="dateAxis" height={60} tick={<CustomizedXAxisTick/>} />
+				  <YAxis yAxisId="weightAxis" domain={['dataMin - 10', 'dataMax + 10']} tick={<CustomizedYAxisTick/>} />
+				  <Tooltip />
+				</LineChart>
+			);
+
+		}
 	}
-})
+});
 
 ReactDOM.render(<SimpleLineChart />, document.querySelector('#main'));
