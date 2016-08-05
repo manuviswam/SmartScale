@@ -34,7 +34,11 @@ func TestSaveWeightSuccess(t *testing.T) {
         t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
     }
     defer db.Close()
+    rows := sqlmock.NewRows([]string{"weight", "recorded_at"}).
+        AddRow(1.2, "2016-08-05T11:26:00.579423Z").
+        AddRow(2.1, "2016-08-05T11:27:00.579423Z")
     mock.ExpectExec(`INSERT INTO weights\(empid,weight,recorded_at\) VALUES\(\$1,\$2,\$3\)`).WithArgs("12345",52.5,sqlmock.AnyArg()).WillReturnResult(sqlmock.NewResult(1, 1))
+    mock.ExpectQuery(`WITH t AS \(SELECT weight,recorded_at FROM weights WHERE empid=\$1 ORDER BY recorded_at DESC LIMIT 10\) SELECT \* FROM t ORDER BY recorded_at ASC`).WithArgs("12345").WillReturnRows(rows)
 
 	req, err := http.NewRequest("GET", "/api/weight?weight=52.5&internalNumber=1111", nil)
     if err != nil {

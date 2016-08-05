@@ -18,6 +18,7 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 		if err != nil {
 			log.Println("Invalid weight: ", err)
 			w.WriteHeader(http.StatusBadRequest)
+			pushErrorMessage("Something bad happened. Please try again.")
 			return
 		}
 
@@ -25,6 +26,7 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 		if err != nil {
 			log.Println("Invalid internal number: ", err)
 			w.WriteHeader(http.StatusBadRequest)
+			pushErrorMessage("Something bad happened. Please try again.")
 			return
 		}
 
@@ -32,6 +34,7 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 		if err != nil {
 			log.Println("Error decoding response: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
+			pushErrorMessage("Unable to retrieve your details. Please contact admin.")
 			return
 		}
 
@@ -45,12 +48,43 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 		if err != nil {
 			log.Println("Error writing to DB: ", err)
 			w.WriteHeader(http.StatusInternalServerError)
+			pushErrorMessage("Something is wrong with the server. Please try after sometime.")
 			return
 		}
 
-		weightInfos, _ := m.GetWeightsByEmpId(db, emp.EmpId)
+		weights, _ := m.GetWeightsByEmpId(db, emp.EmpId)
 
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(weightInfos) //Push this to the websocket channel
+		pushSuccessMessage(emp, wt, weights)
 	}
+}
+
+func pushMessage(data m.WeightResponse) {
+	pushMsg, err := json.Marshal(data)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println(string(pushMsg))//write this message to channel
+}
+
+func pushErrorMessage(msg string) {
+	wr := m.WeightResponse{
+		IsError: true,
+		ErrorMsg: msg,
+	}
+
+	pushMessage(wr)
+}
+
+func pushSuccessMessage(emp m.Employee, currentWeight float64, weights []m.Weight){
+	wr := m.WeightResponse{
+		IsError: false,
+		EmpId: emp.EmpId,
+		EmpName: emp.EmployeeName,
+		CurrentWeight: currentWeight,
+		Weights: weights,
+	}
+
+	pushMessage(wr)
 }
