@@ -68,6 +68,8 @@ const SimpleLineChart = React.createClass({
 				)
 		}else {
 			return (
+				<div>
+				<text>Hello {this.state.data.EmpName}. Your current weight is {this.state.data.CurrentWeight}</text>
 				<LineChart width={600} height={300} data={this.state.data.Weights} margin={{ top: 20, right: 40, bottom: 5, left: 0 }} >
 				  <Line type="monotone" dataKey="Weight" stroke="#8884d8" xAxisId="dateAxis" yAxisId="weightAxis" unit="Kg" label={<CustomizedLabel />}/>
 				  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
@@ -75,6 +77,7 @@ const SimpleLineChart = React.createClass({
 				  <YAxis yAxisId="weightAxis" domain={['dataMin - 10', 'dataMax + 10']} tick={<CustomizedYAxisTick/>} />
 				  <Tooltip />
 				</LineChart>
+				</div>
 			);
 
 		}
