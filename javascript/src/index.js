@@ -82,7 +82,7 @@ const SimpleLineChart = React.createClass({
 				  <Line type="monotone" dataKey="Weight" stroke="#8884d8" xAxisId="dateAxis" yAxisId="weightAxis" unit="Kg" label={<CustomizedLabel />}/>
 				  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
 				  <XAxis dataKey="RecordedAt" xAxisId="dateAxis" height={100} tick={<CustomizedXAxisTick/>} />
-				  <YAxis yAxisId="weightAxis" domain={['dataMin - 10', 'dataMax + 10']} tick={<CustomizedYAxisTick/>} />
+				  <YAxis yAxisId="weightAxis" domain={['dataMin - 2', 'dataMax + 2']} tick={<CustomizedYAxisTick/>} />
 				  <Tooltip />
 				</LineChart>
 				</div>
