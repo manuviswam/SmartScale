@@ -2,6 +2,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { LineChart, Line, CartesianGrid, YAxis, XAxis, Tooltip } from "recharts";
+import Format from "date-format-lite"
 
 const CustomizedLabel = React.createClass({
   render () {
@@ -43,13 +44,20 @@ const SimpleLineChart = React.createClass({
 		};
 	},
 
+	formatDate: function(data) {
+		data.Weights.forEach(function(current, index, weights) {
+			data.Weights[index].RecordedAt = new Date(current.RecordedAt).format("UTC:DD-MM-YYY HH:mm A");
+		})
+		return data;
+	},
+
 	componentWillMount: function() {
 		if(window["WebSocket"]) {
 	        let conn = new WebSocket("ws://localhost:8080/api/getWeight");
 	        conn.onmessage = function (evt) {
 	            this.setState({
 	            	isVisible: true,
-	            	data: JSON.parse(evt.data)
+	            	data: this.formatDate(JSON.parse(evt.data))
 	            });
 	            setTimeout(function(){
 	            	this.setState({
@@ -70,10 +78,10 @@ const SimpleLineChart = React.createClass({
 			return (
 				<div>
 				<text>Hello {this.state.data.EmpName}. Your current weight is {this.state.data.CurrentWeight}</text>
-				<LineChart width={600} height={300} data={this.state.data.Weights} margin={{ top: 20, right: 40, bottom: 5, left: 0 }} >
+				<LineChart width={600} height={400} data={this.state.data.Weights} margin={{ top: 20, right: 40, bottom: 5, left: 0 }} >
 				  <Line type="monotone" dataKey="Weight" stroke="#8884d8" xAxisId="dateAxis" yAxisId="weightAxis" unit="Kg" label={<CustomizedLabel />}/>
 				  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-				  <XAxis dataKey="RecordedAt" xAxisId="dateAxis" height={60} tick={<CustomizedXAxisTick/>} />
+				  <XAxis dataKey="RecordedAt" xAxisId="dateAxis" height={100} tick={<CustomizedXAxisTick/>} />
 				  <YAxis yAxisId="weightAxis" domain={['dataMin - 10', 'dataMax + 10']} tick={<CustomizedYAxisTick/>} />
 				  <Tooltip />
 				</LineChart>

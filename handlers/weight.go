@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"net/http"
 	"database/sql"
-	"time"
-	"log"
-	"strconv"
 	"encoding/json"
+	"log"
+	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/gorilla/websocket"
 
@@ -14,7 +14,7 @@ import (
 	"github.com/manuviswam/SmartScale/utils"
 )
 
-func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *http.Request) { 
+func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		wt, err := strconv.ParseFloat(r.FormValue("weight"), 64)
 		if err != nil {
@@ -41,9 +41,9 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 		}
 
 		weightInfo := m.WeightInfo{
-			EmpId : emp.EmpId,
-			Weight : wt,
-			RecordedAt : time.Now(),
+			EmpId:      emp.EmpId,
+			Weight:     wt,
+			RecordedAt: time.Now(),
 		}
 
 		err = weightInfo.SaveToDB(db)
@@ -73,7 +73,7 @@ func pushMessage(data m.WeightResponse) {
 
 func pushErrorMessage(msg string) {
 	wr := m.WeightResponse{
-		IsError: true,
+		IsError:  true,
 		ErrorMsg: msg,
 	}
 
@@ -82,37 +82,38 @@ func pushErrorMessage(msg string) {
 
 func pushSuccessMessage(emp m.Employee, currentWeight float64, weights []m.Weight) {
 	wr := m.WeightResponse{
-		IsError: false,
-		EmpId: emp.EmpId,
-		EmpName: emp.EmployeeName,
+		IsError:       false,
+		EmpId:         emp.EmpId,
+		EmpName:       emp.EmployeeName,
 		CurrentWeight: currentWeight,
-		Weights: weights,
+		Weights:       weights,
 	}
 
 	pushMessage(wr)
 }
 
 var upgrader = websocket.Upgrader{
-    ReadBufferSize:  1024,
-    WriteBufferSize: 1024,
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
 }
 
 func GetWeight() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
-	    if err != nil {
-	        log.Println(err)
-	        return
-	    }
-	    defer conn.Close()
-	    weightChan := m.WeightChan()
-	    for {
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer conn.Close()
+		weightChan := m.WeightChan()
+		for {
 			msg := <-weightChan
 			err = conn.WriteMessage(websocket.TextMessage, msg)
 			if err != nil {
 				log.Println("write:", err)
 				break
 			}
-	    }
+			log.Println("Pushed message: ", string(msg))
+		}
 	}
 }
