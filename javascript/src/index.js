@@ -71,10 +71,10 @@ const SimpleLineChart = React.createClass({
 
 	render: function() {
 		if(!this.state.isVisible){
-			return (
-				<text>Please step on the weighing machine</text>
-				)
-		}else {
+			return ( <text>Please step on the weighing machine</text> )
+		} else if(this.state.data.IsError){
+			return ( <text>{this.state.data.ErrorMsg}</text> )
+		} else {
 			return (
 				<div>
 				<text>Hello {this.state.data.EmpName}. Your current weight is {this.state.data.CurrentWeight}</text>
