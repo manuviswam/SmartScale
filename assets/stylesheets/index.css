@@ -1,0 +1,45 @@
+body{
+	font-family: "Georgia, serif";
+	background: #1f0c67;
+	color: #fff;
+}
+
+h2{
+	width: 600px;
+	margin: 100px auto 20px;
+	padding: 20px;
+	background: #fff;
+	color: #333;
+	font-size: 28px;
+	font-weight: 300;
+	border-radius: 8px;
+	text-align: center;
+	position: relative;
+}
+
+h2:before{
+	position: absolute;
+	top: 2px;
+	left: 6px;
+	width: 0;
+	height: 0;
+	font-size: 30px;
+	content: '*';
+}
+
+h2:after{
+	position: absolute;
+	bottom: 25px;
+	right: 20px;
+	width: 0;
+	height: 0;
+	font-size: 30px;
+	content: '*';
+}
+
+.recharts-wrapper{
+	margin: 0 auto;
+	background: #fff;
+	border-radius: 8px;
+	padding: 20px;
+}
