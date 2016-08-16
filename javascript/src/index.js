@@ -47,6 +47,11 @@ const SimpleLineChart = React.createClass({
 			return ( <h2>{this.state.data.ErrorMsg}</h2> )
 		} else {
 			return (
+			 <div id="mainWrapper">
+			 	<div id="message" >
+			 		<h2>Hello {this.state.data.EmpName} </h2>
+			 		<p id="currentWeight">{this.state.data.CurrentWeight}</p>
+			 	</div>
 				<AreaChart width={730} height={250} data={this.state.data.Weights} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
 				  <defs>
 				    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
@@ -60,6 +65,7 @@ const SimpleLineChart = React.createClass({
 				  <Tooltip />
 				  <Area type="monotone" dataKey="Weight" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
 				</AreaChart>
+			</div>
 			);
 
 		}
