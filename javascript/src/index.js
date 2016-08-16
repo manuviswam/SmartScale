@@ -14,9 +14,11 @@ const SimpleLineChart = React.createClass({
 	},
 
 	formatDate: function(data) {
-		data.Weights.forEach(function(current, index, weights) {
-			data.Weights[index].RecordedAt = new Date(current.RecordedAt).format("UTC:DD-MM-YYY HH:mm A");
-		})
+		if (!data.IsError) {
+			data.Weights.forEach(function(current, index, weights) {
+				data.Weights[index].RecordedAt = new Date(current.RecordedAt).format("UTC:DD-MM-YYY HH:mm A");
+			})
+		}
 		return data;
 	},
 
