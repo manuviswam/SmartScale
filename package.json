@@ -4,7 +4,7 @@
   "description": "Track your weight in a smart way",
   "main": "index.js",
   "scripts": {
-    "build": "make build",
+    "build": "node_modules/.bin/webpack -p",
     "devServer": "./node_modules/.bin/webpack-dev-server --inline --hot",
     "test": "jest --coverage"
   },

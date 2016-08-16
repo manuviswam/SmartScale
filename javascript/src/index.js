@@ -1,40 +1,9 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { LineChart, Line, CartesianGrid, YAxis, XAxis, Tooltip } from "recharts";
+import { AreaChart, Area, CartesianGrid, YAxis, XAxis, Tooltip } from "recharts";
 import Format from "date-format-lite"
-
-const CustomizedLabel = React.createClass({
-  render () {
-    const {x, y, stroke, payload} = this.props;
-		
-   	return <text x={x} y={y} dy={-4} fill={stroke} fontSize={10} textAnchor="middle">{payload.value}</text>
-  }
-});
-
-const CustomizedXAxisTick = React.createClass({
-  render () {
-    const {x, y, stroke, payload} = this.props;
-		
-   	return (
-    	<g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={16} textAnchor="end" fill="#666" transform="rotate(-35)" fontSize="10">{payload.value}</text>
-      </g>
-    );
-  }
-});
-
-const CustomizedYAxisTick = React.createClass({
-  render () {
-    const {x, y, stroke, payload} = this.props;
-		
-   	return (
-    	<g transform={`translate(${x},${y})`}>
-        <text x={0} y={0} dy={16} textAnchor="end" fill="#666" fontSize="10">{payload.value}</text>
-      </g>
-    );
-  }
-});
+import '../../assets/stylesheets/index.css'
 
 const SimpleLineChart = React.createClass({
 	getInitialState: function() {
@@ -71,21 +40,24 @@ const SimpleLineChart = React.createClass({
 
 	render: function() {
 		if(!this.state.isVisible){
-			return ( <text>Please step on the weighing machine</text> )
+			return ( <h2>Please step on the weighing machine</h2> )
 		} else if(this.state.data.IsError){
-			return ( <text>{this.state.data.ErrorMsg}</text> )
+			return ( <h2>{this.state.data.ErrorMsg}</h2> )
 		} else {
 			return (
-				<div>
-				<text>Hello {this.state.data.EmpName}. Your current weight is {this.state.data.CurrentWeight}</text>
-				<LineChart width={600} height={300} data={this.state.data.Weights} margin={{ top: 20, right: 40, bottom: 5, left: 0 }} >
-				  <Line type="monotone" dataKey="Weight" stroke="#8884d8" xAxisId="dateAxis" yAxisId="weightAxis" unit="Kg" label={<CustomizedLabel />}/>
-				  <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
-				  <XAxis dataKey="RecordedAt" xAxisId="dateAxis" height={100} tick={<CustomizedXAxisTick/>} />
-				  <YAxis yAxisId="weightAxis" domain={['dataMin - 2', 'dataMax + 2']} tick={<CustomizedYAxisTick/>} />
+				<AreaChart width={730} height={250} data={this.state.data.Weights} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+				  <defs>
+				    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+				      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+				      <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+				    </linearGradient>
+				  </defs>
+				  <XAxis dataKey="RecordedAt" />
+				  <YAxis />
+				  <CartesianGrid strokeDasharray="3 3" />
 				  <Tooltip />
-				</LineChart>
-				</div>
+				  <Area type="monotone" dataKey="Weight" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
+				</AreaChart>
 			);
 
 		}
