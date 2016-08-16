@@ -5,6 +5,63 @@ import { AreaChart, Area, CartesianGrid, YAxis, XAxis, Tooltip } from "recharts"
 import Format from "date-format-lite"
 import '../../assets/stylesheets/index.css'
 
+const {PropTypes} = React;
+
+const CustomTooltip  = React.createClass({
+  propTypes: {
+    type: PropTypes.string,
+    payload: PropTypes.array,
+    label: PropTypes.string,
+  },
+
+  render() {
+    const { active } = this.props;
+
+    if (active) {
+      const { payload, label } = this.props;
+      return (
+        <div className="custom-tooltip">
+          <p className="label">{label}</p>
+          <p className="intro">{payload[0].value} Kg </p>
+        </div>
+      );
+    }
+
+    return null;
+  }
+});
+
+const CustomizedLabel = React.createClass({
+  render () {
+    const {x, y, stroke, payload} = this.props;
+   	return <text x={x} y={y} dy={-4} fill={stroke} fontSize={10} textAnchor="middle">{payload.value[1]}</text>
+  }
+});
+
+const CustomizedXAxisTick = React.createClass({
+  render () {
+    const {x, y, stroke, payload} = this.props;
+		
+   	return (
+    	<g transform={`translate(${x},${y})`}>
+        <text textAnchor="middle" y={10} fill="#666" fontSize={10}>{payload.value}</text>
+      </g>
+    );
+  }
+});
+
+const CustomizedYAxisTick = React.createClass({
+  render () {
+    const {x, y, stroke, payload} = this.props;
+		
+   	return (
+    	<g transform={`translate(${x},${y})`}>
+        <text fill="#666" textAnchor="end" fontSize={10}>{payload.value} Kg</text>
+      </g>
+    );
+  }
+});
+
 const SimpleLineChart = React.createClass({
 	getInitialState: function() {
 		return {
@@ -59,11 +116,11 @@ const SimpleLineChart = React.createClass({
 				      <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
 				    </linearGradient>
 				  </defs>
-				  <XAxis dataKey="RecordedAt" />
-				  <YAxis />
+				  <XAxis dataKey="RecordedAt" tick={<CustomizedXAxisTick/>} />
+				  <YAxis type="number" domain={['dataMin - 2', 'dataMax + 2']} tick={<CustomizedYAxisTick/>}  />
 				  <CartesianGrid strokeDasharray="3 3" />
-				  <Tooltip />
-				  <Area type="monotone" dataKey="Weight" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)" />
+				  <Tooltip content={<CustomTooltip /> }/>
+				  <Area type="monotone" dataKey="Weight" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)"  label={<CustomizedLabel />} />
 				</AreaChart>
 			</div>
 			);
