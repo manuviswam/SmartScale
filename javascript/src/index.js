@@ -58,7 +58,7 @@ const CustomizedYAxisTick = React.createClass({
 		
    	return (
     	<g transform={`translate(${x},${y})`}>
-        <text fill="#666" textAnchor="end" fontSize={10}>{payload.value} Kg</text>
+        <text fill="#666" textAnchor="end" fontSize={10}>{Math.round(payload.value)} Kg</text>
       </g>
     );
   }
