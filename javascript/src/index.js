@@ -7,6 +7,8 @@ import '../../assets/stylesheets/index.css'
 
 const {PropTypes} = React;
 
+var timeout;
+
 const CustomTooltip  = React.createClass({
   propTypes: {
     type: PropTypes.string,
@@ -87,7 +89,10 @@ const SimpleLineChart = React.createClass({
 	            	isVisible: true,
 	            	data: this.formatDate(JSON.parse(evt.data))
 	            });
-	            setTimeout(function(){
+	            if(timeout) {
+	            	clearTimeout(timeout);
+	            }
+	            timeout = setTimeout(function(){
 	            	this.setState({
 	            		isVisible: false,
 	            		data: {}
