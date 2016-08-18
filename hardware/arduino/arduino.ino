@@ -6,7 +6,7 @@
 
 SoftwareSerial nodeSerial(5, 4); 
 
-String url="http://10.132.126.36:8080/api/weight";
+String url="http://10.132.127.212:10000/api/weight";
 float weight = 0;
 
 unsigned char databits[MAX_BITS];    // stores all of the data bits
@@ -140,6 +140,6 @@ void printBits(){
       url.concat("&weight=");
       url.concat(weight);
       nodeSerial.println(url);
-      url="http://10.132.126.36:8080/api/weight";
+      url="http://10.132.127.212:10000/api/weight";
       weight = 0;  
 }
