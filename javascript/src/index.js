@@ -119,29 +119,33 @@ const SimpleLineChart = React.createClass({
 
 	render: function() {
 		if(!this.state.isVisible){
-			return ( <h2>Please step on the weighing machine and then swipe</h2> )
+			return ( <div className="messageContainer" ><h2 className="welcomeMessage">Please step on the weighing machine</h2></div> )
 		} else if(this.state.data.IsError){
-			return ( <h2>{this.state.data.ErrorMsg}</h2> )
+			return ( <div className="messageContainer" ><h2 className="errorMessage">{this.state.data.ErrorMsg}</h2></div> )
 		} else {
 			return (
-			 <div id="mainWrapper">
-			 	<div id="message" >
-			 		<h2>Hello {this.state.data.EmpName} </h2>
-			 		<p id="currentWeight">{this.state.data.CurrentWeight}</p>
+			 <div class="mainWrapper">
+			 	<div className="messageContainer" >
+			 		<h2 className="messageHeader">Hello {this.state.data.EmpName},</h2>
+			 		<div className="currentWeight">{this.state.data.CurrentWeight}<span>kg</span></div>
+			 		<div className="currentWeightText">Body weight</div>
 			 	</div>
-				<AreaChart width={730} height={250} data={this.state.data.Weights} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-				  <defs>
-				    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-				      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
-				      <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
-				    </linearGradient>
-				  </defs>
-				  <XAxis dataKey="RecordedAt" tick={<CustomizedXAxisTick/>} />
-				  <YAxis type="number" domain={['dataMin - 2', 'dataMax + 2']} tick={<CustomizedYAxisTick/>}  />
-				  <CartesianGrid strokeDasharray="3 3" />
-				  <Tooltip content={<CustomTooltip /> }/>
-				  <Area type="monotone" dataKey="Weight" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)"  label={<CustomizedLabel />} />
-				</AreaChart>
+			 	<div className="chartContainer">
+			 		<h4 className="chartHeader">your weight graph is here:</h4>
+					<AreaChart width={730} height={250} data={this.state.data.Weights} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+					  <defs>
+					    <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+					      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8}/>
+					      <stop offset="95%" stopColor="#8884d8" stopOpacity={0}/>
+					    </linearGradient>
+					  </defs>
+					  <XAxis dataKey="RecordedAt" tick={<CustomizedXAxisTick/>} />
+					  <YAxis type="number" domain={['dataMin - 2', 'dataMax + 2']} tick={<CustomizedYAxisTick/>}  />
+					  <CartesianGrid strokeDasharray="3 3" />
+					  <Tooltip content={<CustomTooltip /> }/>
+					  <Area type="monotone" dataKey="Weight" stroke="#8884d8" fillOpacity={1} fill="url(#colorUv)"  label={<CustomizedLabel />} />
+					</AreaChart>
+				</div>
 			</div>
 			);
 
