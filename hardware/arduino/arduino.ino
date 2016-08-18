@@ -6,8 +6,8 @@
 
 SoftwareSerial nodeSerial(5, 4); 
 
-String url="http://10.132.127.136:8080/api/weight";
-long weight = 0;
+String url="http://10.132.126.36:8080/api/weight";
+float weight = 0;
 
 unsigned char databits[MAX_BITS];    // stores all of the data bits
 unsigned char bitCount;              // number of bits currently captured
@@ -132,7 +132,7 @@ void loop(){
  
 void printBits(){    
       scale.power_up();
-      weight = scale.get_units(10)/10;
+      weight = scale.get_units(10)/10.0;
       Serial.println(weight, 1);
       scale.power_down();             // put the ADC in sleep mode
       url.concat("?internalNumber=");
@@ -140,6 +140,6 @@ void printBits(){
       url.concat("&weight=");
       url.concat(weight);
       nodeSerial.println(url);
-      url="http://10.132.127.136:8080/api/weight";
+      url="http://10.132.126.36:8080/api/weight";
       weight = 0;  
 }

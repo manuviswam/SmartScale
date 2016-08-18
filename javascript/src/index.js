@@ -72,12 +72,27 @@ const SimpleLineChart = React.createClass({
 		};
 	},
 
-	formatDate: function(data) {
-		if (!data.IsError) {
-			data.Weights.forEach(function(current, index, weights) {
-				data.Weights[index].RecordedAt = new Date(current.RecordedAt).format("UTC:DD-MM-YYY HH:mm A");
-			})
+	formatData: function(data) {
+		if (data.IsError) {
+			return data;
 		}
+		data = this.formatDate(data);
+		data = this.strip(data);
+		return data;
+	},
+
+	formatDate: function(data) {
+		data.Weights.forEach(function(current, index, weights) {
+			data.Weights[index].RecordedAt = new Date(current.RecordedAt).format("UTC:DD-MM-YYY HH:mm A");
+		})
+		return data;
+	},
+
+	strip: function(data) {
+		data.CurrentWeight = parseFloat(parseFloat(data.CurrentWeight).toPrecision(3));
+		data.Weights.forEach(function(current, index, weights) {
+			data.Weights[index].Weight = parseFloat(parseFloat(data.Weights[index].Weight).toPrecision(3));
+		})
 		return data;
 	},
 
@@ -87,7 +102,7 @@ const SimpleLineChart = React.createClass({
 	        conn.onmessage = function (evt) {
 	            this.setState({
 	            	isVisible: true,
-	            	data: this.formatDate(JSON.parse(evt.data))
+	            	data: this.formatData(JSON.parse(evt.data))
 	            });
 	            if(timeout) {
 	            	clearTimeout(timeout);
@@ -104,7 +119,7 @@ const SimpleLineChart = React.createClass({
 
 	render: function() {
 		if(!this.state.isVisible){
-			return ( <h2>Please step on the weighing machine</h2> )
+			return ( <h2>Please step on the weighing machine and then swipe</h2> )
 		} else if(this.state.data.IsError){
 			return ( <h2>{this.state.data.ErrorMsg}</h2> )
 		} else {
