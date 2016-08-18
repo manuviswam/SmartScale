@@ -25,15 +25,15 @@ body{
 }
 
 .currentWeight{
-	width: 100px;
-    height: 100px;
+	width: 135px;
+    height: 135px;
     margin: 0 auto;
     text-align: center;
-    font-size: 42px;
-    line-height: 90px;
+    font-size: 46px;
+    line-height: 135px;
     font-weight: lighter;
     background: #1f0c67;
-    border-radius: 50px;
+    border-radius: 50%;
     transition: all 0.3s linear 0.3s;
 }
 
