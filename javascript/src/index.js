@@ -101,7 +101,7 @@ const SimpleLineChart = React.createClass({
 
 	componentWillMount: function() {
 		if(window["WebSocket"]) {
-	        let conn = new WebSocket("ws://localhost:10000/api/getWeight");
+	        let conn = new WebSocket("ws://10.132.127.212:10000/api/getWeight");
 	        conn.onclose = function(evt) {
 	        	window.location.reload();
 	        }
