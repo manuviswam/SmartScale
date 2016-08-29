@@ -73,7 +73,7 @@ const SimpleLineChart = React.createClass({
 	},
 
 	formatData: function(data) {
-		if (!data.IsError && this.state.data.Weights) {
+		if (!data.IsError) {
 			data = this.formatDate(data);
 			data = this.strip(data);
 		}
@@ -81,17 +81,21 @@ const SimpleLineChart = React.createClass({
 	},
 
 	formatDate: function(data) {
-		data.Weights.forEach(function(current, index, weights) {
-			data.Weights[index].RecordedAt = new Date(current.RecordedAt).format("UTC:DD-MM-YYY HH:mm A");
-		})
+		if(this.state.data.Weights){
+			data.Weights.forEach(function(current, index, weights) {
+				data.Weights[index].RecordedAt = new Date(current.RecordedAt).format("UTC:DD-MM-YYY HH:mm A");
+			})
+		}
 		return data;
 	},
 
 	strip: function(data) {
 		data.CurrentWeight = parseFloat(parseFloat(data.CurrentWeight).toPrecision(3));
-		data.Weights.forEach(function(current, index, weights) {
-			data.Weights[index].Weight = parseFloat(parseFloat(data.Weights[index].Weight).toPrecision(3));
-		})
+		if(this.state.data.Weights){
+			data.Weights.forEach(function(current, index, weights) {
+				data.Weights[index].Weight = parseFloat(parseFloat(data.Weights[index].Weight).toPrecision(3));
+			})
+		}
 		return data;
 	},
 
@@ -128,7 +132,7 @@ const SimpleLineChart = React.createClass({
 			return (
 				<div className="mainWrapper">
 			 	<div className="messageContainer" >
-			 		<h2 className="messageHeader">Hello {this.state.data.EmpName},</h2>
+			 		<h2 className="messageHeader">Hello Guest,</h2>
 			 		<div className="currentWeight">{this.state.data.CurrentWeight}<span>kg</span></div>
 			 		<div className="currentWeightText">Body weight</div>
 			 	</div>

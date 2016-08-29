@@ -28,9 +28,8 @@ func randSeq(n int) string {
 func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var weights []m.Weight
-		emp := m.Employee{
-			EmployeeName: "Guest",
-		}
+		var emp m.Employee
+
 		wt, err := strconv.ParseFloat(r.FormValue("weight"), 64)
 		if err != nil {
 			log.Println("Invalid weight: ", err)
@@ -48,7 +47,7 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 		}
 
 		if in != 0 {
-			emp, err := eg.GetEmployeeFromInternalNumber(in)
+			emp, err = eg.GetEmployeeFromInternalNumber(in)
 			if err != nil {
 				log.Println("Error decoding response: ", err)
 				w.WriteHeader(http.StatusInternalServerError)

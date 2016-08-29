@@ -8,6 +8,7 @@ SoftwareSerial nodeSerial(5, 4);
 
 String url="http://10.132.127.212:10000/api/weight";
 float weight = 0;
+bool freshMeasure = true;
 
 unsigned char databits[MAX_BITS];    // stores all of the data bits
 unsigned char bitCount;              // number of bits currently captured
@@ -91,6 +92,21 @@ void loop(){
     if (--weigand_counter == 0)
       flagDone = 1;  
   }
+  else {
+    scale.power_up();
+    weight = scale.get_units(10)/10.0;
+    scale.power_down();
+    Serial.println(weight);
+    if(freshMeasure && weight > 10.0) {
+    
+      freshMeasure = false;
+      printBits();
+    }
+    if(!freshMeasure && weight < 10.0) {
+      freshMeasure = true;
+      weight = 0;
+    }
+  }
  
   // if we have bits and we the weigand counter went out
   if (bitCount > 0 && flagDone) {
@@ -130,16 +146,17 @@ void loop(){
   }
 }
  
-void printBits(){    
-      scale.power_up();
+void printBits(){  
+      scale.power_up();  
+      delay(300);
       weight = scale.get_units(10)/10.0;
-      Serial.println(weight, 1);
-      scale.power_down();             // put the ADC in sleep mode
+      scale.power_down();
+      Serial.println(weight,1);
+      Serial.println("print");
       url.concat("?internalNumber=");
       url.concat(cardCode);
       url.concat("&weight=");
       url.concat(weight);
       nodeSerial.println(url);
       url="http://10.132.127.212:10000/api/weight";
-      weight = 0;  
 }
