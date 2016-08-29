@@ -73,11 +73,10 @@ const SimpleLineChart = React.createClass({
 	},
 
 	formatData: function(data) {
-		if (data.IsError) {
-			return data;
+		if (!data.IsError && this.state.data.Weights) {
+			data = this.formatDate(data);
+			data = this.strip(data);
 		}
-		data = this.formatDate(data);
-		data = this.strip(data);
 		return data;
 	},
 
@@ -98,7 +97,7 @@ const SimpleLineChart = React.createClass({
 
 	componentWillMount: function() {
 		if(window["WebSocket"]) {
-	        let conn = new WebSocket("ws://10.132.127.212:10000/api/getWeight");
+	        let conn = new WebSocket("ws://localhost:10000/api/getWeight");
 	        conn.onclose = function(evt) {
 	        	window.location.reload();
 	        }
@@ -125,9 +124,22 @@ const SimpleLineChart = React.createClass({
 			return ( <div className="messageContainer" ><h2 className="welcomeMessage">Please step on the weighing machine</h2></div> )
 		} else if(this.state.data.IsError){
 			return ( <div className="messageContainer" ><h2 className="errorMessage">{this.state.data.ErrorMsg}</h2></div> )
+		} else if (!this.state.data.Weights || this.state.data.Weights.length < 1) {
+			return (
+				<div className="mainWrapper">
+			 	<div className="messageContainer" >
+			 		<h2 className="messageHeader">Hello {this.state.data.EmpName},</h2>
+			 		<div className="currentWeight">{this.state.data.CurrentWeight}<span>kg</span></div>
+			 		<div className="currentWeightText">Body weight</div>
+			 	</div>
+			 	<div className="messageContainer">
+			 		<h2 className="welcomeMessage">Swipe the card to get previous weights</h2>
+				</div>
+			</div>
+			);
 		} else {
 			return (
-			 <div class="mainWrapper">
+			 <div className="mainWrapper">
 			 	<div className="messageContainer" >
 			 		<h2 className="messageHeader">Hello {this.state.data.EmpName},</h2>
 			 		<div className="currentWeight">{this.state.data.CurrentWeight}<span>kg</span></div>

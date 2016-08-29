@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"log"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"time"
@@ -14,8 +15,22 @@ import (
 	"github.com/manuviswam/SmartScale/utils"
 )
 
+var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func randSeq(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
+}
+
 func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var weights []m.Weight
+		emp := m.Employee{
+			EmployeeName: "Guest",
+		}
 		wt, err := strconv.ParseFloat(r.FormValue("weight"), 64)
 		if err != nil {
 			log.Println("Invalid weight: ", err)
@@ -32,30 +47,31 @@ func SaveWeight(db *sql.DB, eg utils.EmployeeGetter) func(http.ResponseWriter, *
 			return
 		}
 
-		emp, err := eg.GetEmployeeFromInternalNumber(in)
-		if err != nil {
-			log.Println("Error decoding response: ", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			pushErrorMessage("Unable to retrieve your details. Please contact admin.")
-			return
+		if in != 0 {
+			emp, err := eg.GetEmployeeFromInternalNumber(in)
+			if err != nil {
+				log.Println("Error decoding response: ", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				pushErrorMessage("Unable to retrieve your details. Please contact admin.")
+				return
+			}
+
+			weightInfo := m.WeightInfo{
+				EmpId:      emp.EmpId,
+				Weight:     wt,
+				RecordedAt: time.Now(),
+			}
+
+			err = weightInfo.SaveToDB(db)
+			if err != nil {
+				log.Println("Error writing to DB: ", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				pushErrorMessage("Something is wrong with the server. Please try after sometime.")
+				return
+			}
+
+			weights, _ = m.GetWeightsByEmpId(db, emp.EmpId)
 		}
-
-		weightInfo := m.WeightInfo{
-			EmpId:      emp.EmpId,
-			Weight:     wt,
-			RecordedAt: time.Now(),
-		}
-
-		err = weightInfo.SaveToDB(db)
-		if err != nil {
-			log.Println("Error writing to DB: ", err)
-			w.WriteHeader(http.StatusInternalServerError)
-			pushErrorMessage("Something is wrong with the server. Please try after sometime.")
-			return
-		}
-
-		weights, _ := m.GetWeightsByEmpId(db, emp.EmpId)
-
 		w.WriteHeader(http.StatusOK)
 		pushSuccessMessage(emp, wt, weights)
 	}
@@ -87,6 +103,7 @@ func pushSuccessMessage(emp m.Employee, currentWeight float64, weights []m.Weigh
 		EmpName:       emp.EmployeeName,
 		CurrentWeight: currentWeight,
 		Weights:       weights,
+		RandomString:  randSeq(10),
 	}
 
 	pushMessage(wr)
